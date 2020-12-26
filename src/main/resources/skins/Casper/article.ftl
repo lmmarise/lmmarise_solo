@@ -35,7 +35,9 @@
     <div class="article__top">
         <div class="fn__clear">
             <div class="toc fn__none" onclick="$('.post__toc').slideToggle()">${tocLabel}</div>
+
             <div class="title fn__pointer" onclick="Util.goTop()">${article.articleTitle}</div>
+
             <#include "../../common-template/share.ftl">
         </div>
         <progress class="article__progress"></progress>
@@ -52,14 +54,14 @@
                        href="${servePath}/tags/${articleTag?url('UTF-8')}">${articleTag}</a> &nbsp;
                 </#list>
             </div>
-            <h2 class="item__title">
+            <h1 class="item__title">
                 ${article.articleTitle}
                 <#if article.articlePutTop>
                     <sup>
                         ${topArticleLabel}
                     </sup>
                 </#if>
-            </h2>
+            </h1>
         </div>
         <div class="item__cover" style="background-image: url(${article.articleImg1URL})"></div>
         <div class="wrapper">
@@ -78,9 +80,10 @@
             <#include "../../common-template/toc.ftl"/>
         </div>
     </#if>
-        <div id="gitalk-container" class="comment__wrapper wrapper" style="margin: 40px auto"></div>
-        <div id="b3logsolocomments"></div>
-        <div id="vcomment" class="comment__wrapper wrapper" style="margin: 40px auto" data-name="${article.authorName}" data-postId="${article.oId}"></div>
+    <div id="gitalk-container" class="comment__wrapper wrapper" style="margin: 40px auto"></div>
+    <div id="b3logsolocomments"></div>
+    <div id="vcomment" class="comment__wrapper wrapper" style="margin: 40px auto" data-name="${article.authorName}"
+         data-postId="${article.oId}"></div>
     <div class="article__bottom">
         <div class="wrapper">
             <div class="fn__flex">

@@ -44,6 +44,8 @@ import org.b3log.solo.util.Statics;
 import org.json.JSONObject;
 
 import java.io.StringWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -108,7 +110,7 @@ public final class Server extends BaseServer {
         Stopwatchs.start("Booting");
 
         final Options options = new Options();
-        final Option listenPortOpt = Option.builder().longOpt("listen_port").argName("LISTEN_PORT").hasArg().desc("listen port, default is 8080").build();
+        final Option listenPortOpt = Option.builder().longOpt("listen_port").argName("LISTEN_PORT").hasArg().desc("listen port, default is 8081").build();
         options.addOption(listenPortOpt);
 
         final Option unixDomainSocketPathOpt = Option.builder().longOpt("unix_domain_socket_path").argName("UNIX_DOMAIN_SOCKET_PATH").hasArg().desc("unix domain socket path").build();
@@ -120,7 +122,7 @@ public final class Server extends BaseServer {
         final Option serverHostOpt = Option.builder().longOpt("server_host").argName("SERVER_HOST").hasArg().desc("browser visit domain name, default is localhost").build();
         options.addOption(serverHostOpt);
 
-        final Option serverPortOpt = Option.builder().longOpt("server_port").argName("SERVER_PORT").hasArg().desc("browser visit port, default is 8080").build();
+        final Option serverPortOpt = Option.builder().longOpt("server_port").argName("SERVER_PORT").hasArg().desc("browser visit port, default is 8081").build();
         options.addOption(serverPortOpt);
 
         final Option staticServerSchemeOpt = Option.builder().longOpt("static_server_scheme").argName("STATIC_SERVER_SCHEME").hasArg().desc("browser visit static resource protocol, default is http").build();
@@ -129,7 +131,7 @@ public final class Server extends BaseServer {
         final Option staticServerHostOpt = Option.builder().longOpt("static_server_host").argName("STATIC_SERVER_HOST").hasArg().desc("browser visit static resource domain name, default is localhost").build();
         options.addOption(staticServerHostOpt);
 
-        final Option staticServerPortOpt = Option.builder().longOpt("static_server_port").argName("STATIC_SERVER_PORT").hasArg().desc("browser visit static resource port, default is 8080").build();
+        final Option staticServerPortOpt = Option.builder().longOpt("static_server_port").argName("STATIC_SERVER_PORT").hasArg().desc("browser visit static resource port, default is 8081").build();
         options.addOption(staticServerPortOpt);
 
         final Option staticPathOpt = Option.builder().longOpt("static_path").argName("STATIC_PATH").hasArg().desc("browser visit static resource path, default is empty").build();
@@ -219,7 +221,22 @@ public final class Server extends BaseServer {
             Latkes.setRuntimeMode(Latkes.RuntimeMode.valueOf(runtimeMode));
         }
         String luteHttp = commandLine.getOptionValue("lute_http");
-        if (null != luteHttp) {
+        if (luteHttp == null) {
+            try {
+                luteHttp = "http://localhost:8249";
+                URL url  = new URL(luteHttp);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setConnectTimeout(3 * 1000);
+                conn.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
+                if (200 == conn.getResponseCode()) {
+                    Markdowns.LUTE_ENGINE_URL = luteHttp;
+                    Markdowns.LUTE_AVAILABLE = true;
+                    System.out.println("没有设置lute_http, 但检测到本地存在默认的lute_http服务: " + luteHttp + ", 已启用lute_http服务");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
             Markdowns.LUTE_ENGINE_URL = luteHttp;
             Markdowns.LUTE_AVAILABLE = true;
         }
@@ -320,8 +337,9 @@ public final class Server extends BaseServer {
         } else {
             String portArg = commandLine.getOptionValue("listen_port");
             if (!Strings.isNumeric(portArg)) {
-                portArg = "8080";
+                portArg = "8010";
             }
+            System.out.println("solo is running on 127.0.0.1:" + portArg);
             server.start(Integer.parseInt(portArg));
         }
     }
