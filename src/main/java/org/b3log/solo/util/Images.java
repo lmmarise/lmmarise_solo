@@ -17,6 +17,7 @@ import org.apache.commons.lang.time.DateUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.b3log.latke.Latkes;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -45,13 +46,36 @@ public final class Images {
     public static String COMMUNITY_FILE_URL = "https://b3logfile.com";
 
     /**
+     * 用户自定义排除不需要上传到社区图床的地址
+     */
+    public static String[] EXCLUDE_UPLOAD_URLS = Latkes.getLocalProperty("exclude.upload.urls").split(",");
+
+    /**
      * Checks whether the specified URL has uploaded.
      *
      * @param url the specified URL
      * @return {@code true} if it has uploaded, returns {@code false} otherwise
      */
     public static boolean uploaded(final String url) {
-        return StringUtils.startsWith(url, COMMUNITY_FILE_URL) || StringUtils.startsWith(url, "https://img.hacpai.com");
+        return StringUtils.startsWith(url, COMMUNITY_FILE_URL)
+                || StringUtils.startsWith(url, "https://img.hacpai.com")
+                || exclude(url, EXCLUDE_UPLOAD_URLS);
+    }
+
+    /**
+     * user define URLs to exclude upload. {@see resources/local.properties}
+     *
+     * @param url  the specified URL
+     * @param urls the exclude upload URLs
+     * @return {@code true} means no upload is required, returns {@code false} that an upload is required
+     */
+    private static boolean exclude(String url, String[] urls) {
+        for (String s : urls) {
+            if (StringUtils.contains(url, s)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
