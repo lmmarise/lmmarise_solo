@@ -3617,3 +3617,24 @@ h1::after {
 #pjax > div.article > div.ft__center > h1::before {
     display: none;
 }
+
+section > h1 {
+    text-align: center;
+    padding-bottom: 0.4em;
+    font-size: 2.2em;
+    margin: 1.6em auto 1em;
+    position: relative;
+    font-weight: normal;
+    line-height: 1.4;
+    cursor: text;
+    color: var(--title-color);
+    font-family: var(--title-font);
+}
+
+section > h1::after {
+    display: none;
+}
+
+section > h1::before {
+    display: none;
+}
